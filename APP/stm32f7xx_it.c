@@ -46,7 +46,7 @@ extern DCMI_HandleTypeDef hdcmi;
 extern I2C_HandleTypeDef hi2c1;
 extern TIM_HandleTypeDef htim3;
 extern UART_HandleTypeDef huart3;
-
+extern JPEG_HandleTypeDef JPEG_Handle;
 /******************************************************************************/
 /*            Cortex-M7 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
@@ -199,6 +199,27 @@ void DCMI_IRQHandler(void)
   /* USER CODE END DCMI_IRQn 1 */
 }
 
+
+void JPEG_IRQHandler(void)
+{
+	printf("\rJPEG_IRQHandler\n");
+	
+  HAL_JPEG_IRQHandler(&JPEG_Handle);
+}
+
+void DMA2_Stream3_IRQHandler(void)
+{
+		printf("\rDMA2_Stream3_IRQHandler\n");
+	
+    HAL_DMA_IRQHandler(JPEG_Handle.hdmain);
+}
+
+void DMA2_Stream4_IRQHandler(void)
+{
+		printf("\rDMA2_Stream4_IRQHandler\n");
+	
+    HAL_DMA_IRQHandler(JPEG_Handle.hdmaout);
+}
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */

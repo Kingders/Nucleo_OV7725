@@ -448,8 +448,8 @@ void HAL_JPEG_MspInit(JPEG_HandleTypeDef *hjpeg)
   __HAL_RCC_JPEG_CLK_ENABLE();
   
     /* Enable DMA clock */
-  __DMA2_CLK_ENABLE();
-  
+  __HAL_RCC_DMA2_CLK_ENABLE();
+
   HAL_NVIC_SetPriority(JPEG_IRQn, 0x06, 0x0F);
   HAL_NVIC_EnableIRQ(JPEG_IRQn);
   
@@ -468,13 +468,13 @@ void HAL_JPEG_MspInit(JPEG_HandleTypeDef *hjpeg)
   hdmaIn.Init.MemBurst = DMA_MBURST_INC4;
   hdmaIn.Init.PeriphBurst = DMA_PBURST_INC4;      
   
-  hdmaIn.Instance = DMA2_Stream0;
+  hdmaIn.Instance = DMA2_Stream3;
   
   /* Associate the DMA handle */
   __HAL_LINKDMA(hjpeg, hdmain, hdmaIn);
   
-  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0x07, 0x0F);
-  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);    
+  HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 0x07, 0x0F);
+  HAL_NVIC_EnableIRQ(DMA2_Stream3_IRQn);    
   
   /* DeInitialize the DMA Stream */
   HAL_DMA_DeInit(&hdmaIn);  
@@ -498,7 +498,7 @@ void HAL_JPEG_MspInit(JPEG_HandleTypeDef *hjpeg)
   hdmaOut.Init.PeriphBurst = DMA_PBURST_INC4;
 
   
-  hdmaOut.Instance = DMA2_Stream1;
+  hdmaOut.Instance = DMA2_Stream4;
   /* DeInitialize the DMA Stream */
   HAL_DMA_DeInit(&hdmaOut);  
   /* Initialize the DMA stream */
@@ -507,8 +507,8 @@ void HAL_JPEG_MspInit(JPEG_HandleTypeDef *hjpeg)
   /* Associate the DMA handle */
   __HAL_LINKDMA(hjpeg, hdmaout, hdmaOut);
   
-  HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 0x07, 0x0F);
-  HAL_NVIC_EnableIRQ(DMA2_Stream1_IRQn);  
+  HAL_NVIC_SetPriority(DMA2_Stream4_IRQn, 0x07, 0x0F);
+  HAL_NVIC_EnableIRQ(DMA2_Stream4_IRQn);   
     
 }
 
