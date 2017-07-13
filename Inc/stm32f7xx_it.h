@@ -55,7 +55,9 @@ void I2C1_ER_IRQHandler(void);
 void DMA2_Stream1_IRQHandler(void);
 void OTG_FS_IRQHandler(void);
 void DCMI_IRQHandler(void);
-
+void JPEG_IRQHandler(void);
+void DMA2_Stream3_IRQHandler(void);
+void DMA2_Stream4_IRQHandler(void);
 #ifdef __cplusplus
 }
 #endif
