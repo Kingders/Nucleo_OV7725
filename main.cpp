@@ -131,7 +131,7 @@ void UART_SendData(uint8_t* pbuf, uint16_t size)
 
 void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi){
   /* Prevent unused argument(s) compilation warning */
-	uint32_t JpegEncodeProcessing_End = 0;
+	//uint32_t JpegEncodeProcessing_End = 0;
 	
 	DEBUG("\rHAL_DCMI_VsyncEventCallback\n");
 	
@@ -139,10 +139,15 @@ void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi){
 //		return;
 					
 	dcmi_flag++;
+
+	if(dcmi_flag == 2)
+		HAL_DCMI_Stop(hdcmi);
+
+#if 0	
 	if(dcmi_flag == 2){
 		dcmi_flag = 0;
 		HAL_DCMI_Stop(hdcmi);
-		
+
 		#if IMAGE_TYPE == GRAY_IMAGE
 			bayer2rgb(gray_image);
 		#elif IMAGE_TYPE == COLOR_IMAGE
@@ -187,12 +192,14 @@ void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi){
 */
 
 	}
-
+#endif
 }
 
 HAL_StatusTypeDef stateDCMI = HAL_OK;
 int main()
 {
+	uint32_t JpegEncodeProcessing_End = 0;
+	
 	HAL_Init();
 	SystemClock_Config();
 	pc.baud(9600);
@@ -250,7 +257,56 @@ int main()
 			
 			//stateDCMI = HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_SNAPSHOT, (uint32_t)pData, NR * NC);
 		}
-*/		
+*/
+
+		if(dcmi_flag == 2)
+		{
+			dcmi_flag = 0;
+			
+			#if IMAGE_TYPE == GRAY_IMAGE
+				bayer2rgb(gray_image);
+			#elif IMAGE_TYPE == COLOR_IMAGE
+				bayer2rgb(color_image);
+			#endif
+			
+			//start image operation.....
+			/*##	JPEG Encoding with DMA (Not Blocking ) Method ################*/
+
+
+			DEBUG("\rJPEG_Encode_DMA\n");
+				
+			JPEG_Encode_DMA(&JPEG_Handle);
+					
+			/*##	Wait till end of JPEG encoding and perfom Input/Output Processing in BackGround  #*/
+			do
+			{
+				JPEG_EncodeInputHandler(&JPEG_Handle);
+				JpegEncodeProcessing_End = JPEG_EncodeOutputHandler(&JPEG_Handle);
+							
+			}while(JpegEncodeProcessing_End == 0);		
+
+			
+			//end image operation.....
+				bGetReady = FALSE;	
+				HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_SNAPSHOT, (uint32_t)pData, NR * NC);
+			
+				//configure the picture resolution
+	/*
+				width[0] = NC & 0xff;
+				width[1] = (NC >> 8) & 0xff;
+				height[0] = NR & 0xff;
+				height[1] = (NR >> 8) & 0xff;
+
+
+				//send the resolution data to the MIAT software
+				//format + width + height + image data
+				int i;
+				HAL_UART_Transmit(&huart2, format, (uint16_t) 6, TIMEOUT);
+				for(i=1;i>=0;i--) HAL_UART_Transmit(&huart2, &width[i], (uint16_t) 1, TIMEOUT);
+				for(i=1;i>=0;i--) HAL_UART_Transmit(&huart2, &height[i], (uint16_t) 1, TIMEOUT);
+	*/
+
+		}		
 	}	
 		
 }
